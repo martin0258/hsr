@@ -41,6 +41,7 @@ if (Meteor.isClient) {
       // Not sure why == would always result in false
       isCorrect = inputSentence.localeCompare(expectedSentence)==0;
       // Reference of fadeout with delay: http://stackoverflow.com/a/14304583
+      $("#correct,#incorrect").hide();
       if (isCorrect) $("#correct").fadeIn('fast', function(){ $(this).delay(3000).fadeOut('fast'); });
       else $("#incorrect").fadeIn('fast', function(){ $(this).delay(3000).fadeOut('fast'); });
     },
