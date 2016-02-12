@@ -120,6 +120,7 @@ if (Meteor.isClient) {
     "click #sample": function (event, template) {
       var sampleUrl = "https://tw.voicetube.com/videos/5048";
       template.find("#url").value = sampleUrl;
+      template.find("#source-submit").click();
     },
     "submit #source": function (event) {
       // Prevent default browser form submit
@@ -133,7 +134,10 @@ if (Meteor.isClient) {
       
       // Get VoiceTube data from url
       Meteor.call('getVoiceTubeData', url, function (error, result){
-        if (error) console.log('error', error);
+        if (error) {
+          console.log('error', error);
+          alert('無法載入影片，請檢查影片網址是否正確。');
+        }
         else {
           Session.set('captionIdx', 0);
           Session.set('youtubeId', result.youtubeId);
