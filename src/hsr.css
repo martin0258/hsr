@@ -1,0 +1,24 @@
+.center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+form {
+  margin: 0 0 0 0;
+}
+#url, #sentence {
+  width: 300px;
+}
+#source, #sentence-block {
+  margin: 5px 0 5px 0;
+}
+.result {
+  display: none;
+}
+#correct {
+  color: green;
+}
+#incorrect {
+  color: red;
+}
