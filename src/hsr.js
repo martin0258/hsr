@@ -120,6 +120,7 @@ if (Meteor.isClient) {
     "click #sample": function (event, template) {
       var sampleUrl = "https://tw.voicetube.com/videos/5048";
       template.find("#url").value = sampleUrl;
+      template.find("#source-submit").click();
     },
     "submit #source": function (event) {
       // Prevent default browser form submit
