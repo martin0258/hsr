@@ -5,6 +5,10 @@ if (Meteor.isClient) {
   });
   
   Template.playground.events({
+    'submit #sentence-form': function (event, template) {
+      event.preventDefault();
+      template.find('#check').click();
+    },
     'click #next': function (event, template) {
       window.clearTimeout(timeoutId);
       player.pauseVideo();

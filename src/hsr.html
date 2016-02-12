@@ -26,12 +26,14 @@
     <span id="solution">&nbsp;{{solution}}</span>
   </div>
   
-  <div id="sentence-block" class="form-inline">
-    <span id="first">{{first}}</span>
-    <!--Reference of dynamic textbox width: http://stackoverflow.com/a/3392617 -->
-    <input id="sentence" name="sentence" type="text" placeholder="請輸入聽到的英文（標點和大小寫沒差）"
-    onkeypress="this.style.width = Math.max(300, ((this.value.length + 1) * 7)) + 'px';" />
-    <span id="last">{{last}}</span>
+  <div id="sentence-block">
+    <form id="sentence-form" class="form-inline">
+      <span id="first">{{first}}</span>
+      <!--Reference of dynamic textbox width: http://stackoverflow.com/a/3392617 -->
+      <input id="sentence" name="sentence" type="text" placeholder="請輸入聽到的英文（標點和大小寫沒差）"
+      onkeypress="this.style.width = Math.max(300, ((this.value.length + 1) * 7)) + 'px';" />
+      <span id="last">{{last}}</span>
+    </form>
   </div>
   
   <div class="form-inline">
