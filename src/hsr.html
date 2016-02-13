@@ -24,7 +24,9 @@
 <template name="playground">
   {{#if hasEnteredUrl}}
   <div>
-    <span id="solution">&nbsp;{{solution}}</span>
+    <span id="first">{{first}}</span>
+    <span id="solution"><abbr title="反白看答案">{{solution}}</abbr></span>
+    <span id="last">{{last}}</span>
   </div>
   
   <div id="sentence-block">
@@ -41,7 +43,6 @@
   <div class="form-inline">
     <button type="button" class="btn btn-primary" id="check">核對✓</button>
     <button type="button" class="btn btn-primary" id="next">下句 </button>
-    <button type="button" class="btn btn-default" id="showSolution">答案？</button>
     <button type="button" class="btn btn-default" id="repeat">重聽↻</button>
   </div>
   

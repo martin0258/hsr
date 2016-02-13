@@ -42,7 +42,7 @@ if (Meteor.isClient) {
       // Case insensitive comparision
       inputSentence = inputSentence.toLowerCase();
       expectedSentence = expectedSentence.toLowerCase();
-      // Rmove characters that are not English or number or white space
+      // Remove characters that are not English or number or white space
       inputSentence = inputSentence.replace(/[^a-z0-9 ]/g, '');
       expectedSentence = expectedSentence.replace(/[^a-z0-9 ]/g, '');
       // Ignore white spaces
@@ -61,10 +61,6 @@ if (Meteor.isClient) {
       $(".result").hide();
       if (isCorrect) $("#correct").show();
       else $("#incorrect").show();
-    },
-    'click #showSolution': function () {
-      var caption = Session.get('curCaption');
-      Session.set('solution', caption.text);
     },
     'click #repeat': function () {
       var caption = Session.get('curCaption');
@@ -86,7 +82,16 @@ if (Meteor.isClient) {
       return caption!=undefined ? caption.text.split(' ').pop() : '';
     },
     solution: function () {
-      return Session.get('solution') ? Session.get('solution') : '';
+      var solution = '';
+      var caption = Session.get('curCaption');
+      if (caption != undefined) {
+        // Remove first and last words since they are given
+        var captionWords = caption.text.split(' ');
+        captionWords.splice(0, 1);
+        captionWords.splice(captionWords.length - 1, 1);
+        solution = captionWords.join(' ');
+      }
+      return solution;
     },
     captionIdx: function () {
       var captionIdx = Session.get('captionIdx');
