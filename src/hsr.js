@@ -5,8 +5,20 @@ if (Meteor.isClient) {
   });
   
   Template.playground.events({
+    'keyup #sentence': function (event) {
+      // Hide result if the keypress is not ENTER
+      if (event.which != 13) $(".result").hide();
+    },
     'submit #sentence-form': function (event, template) {
       event.preventDefault();
+      if ($("#correct").is(":visible")) {
+        template.find('#next').click();
+        return;
+      }
+      else if ($("#incorrect").is(":visible")) {
+        template.find('#repeat').click();
+        return;
+      }
       template.find('#check').click();
     },
     'click #next': function (event, template) {
@@ -19,6 +31,9 @@ if (Meteor.isClient) {
       Session.set('curCaption', nextCaption);
       Session.set('solution', '');
       template.find('#sentence').value = '';
+      // Reset textbox width by triggering keypress
+      $('#sentence').trigger('keypress');
+      $(".result").hide();
       player.seekTo(nextCaption.start, true);
       player.playVideo();
     },
@@ -29,7 +44,7 @@ if (Meteor.isClient) {
       // Case insensitive comparision
       inputSentence = inputSentence.toLowerCase();
       expectedSentence = expectedSentence.toLowerCase();
-      // Rmove characters that are not English or number or white space
+      // Remove characters that are not English or number or white space
       inputSentence = inputSentence.replace(/[^a-z0-9 ]/g, '');
       expectedSentence = expectedSentence.replace(/[^a-z0-9 ]/g, '');
       // Ignore white spaces
@@ -43,15 +58,11 @@ if (Meteor.isClient) {
       inputSentence = actualWords.join(' ');
       expectedSentence = expectedWords.join(' ');
       // Not sure why == would always result in false
+      // So we use lcaleCompare instead
       isCorrect = inputSentence.localeCompare(expectedSentence)==0;
-      // Reference of fadeout with delay: http://stackoverflow.com/a/14304583
-      $("#correct,#incorrect").hide();
-      if (isCorrect) $("#correct").fadeIn('fast', function(){ $(this).delay(3000).fadeOut('fast'); });
-      else $("#incorrect").fadeIn('fast', function(){ $(this).delay(3000).fadeOut('fast'); });
-    },
-    'click #showSolution': function () {
-      var caption = Session.get('curCaption');
-      Session.set('solution', caption.text);
+      $(".result").hide();
+      if (isCorrect) $("#correct").show();
+      else $("#incorrect").show();
     },
     'click #repeat': function () {
       var caption = Session.get('curCaption');
@@ -73,7 +84,16 @@ if (Meteor.isClient) {
       return caption!=undefined ? caption.text.split(' ').pop() : '';
     },
     solution: function () {
-      return Session.get('solution') ? Session.get('solution') : '';
+      var solution = '';
+      var caption = Session.get('curCaption');
+      if (caption != undefined) {
+        // Remove first and last words since they are given
+        var captionWords = caption.text.split(' ');
+        captionWords.splice(0, 1);
+        captionWords.splice(captionWords.length - 1, 1);
+        solution = captionWords.join(' ');
+      }
+      return solution;
     },
     captionIdx: function () {
       var captionIdx = Session.get('captionIdx');

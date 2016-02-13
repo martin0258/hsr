@@ -8,7 +8,7 @@ form {
   margin: 0 0 0 0;
 }
 #url, #sentence {
-  width: 300px;
+  width: 250px;
 }
 #source, #sentence-block {
   margin: 5px 0 5px 0;
@@ -16,9 +16,15 @@ form {
 .result {
   display: none;
 }
+#check, #next, #repeat {
+  display: none;
+}
 #correct {
   color: green;
 }
 #incorrect {
   color: red;
+}
+#solution {
+  color: white;
 }
