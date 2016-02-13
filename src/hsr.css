@@ -16,7 +16,7 @@ form {
 .result {
   display: none;
 }
-#check {
+#check, #next {
   display: none;
 }
 #correct {
