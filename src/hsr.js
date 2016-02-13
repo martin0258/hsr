@@ -5,7 +5,7 @@ if (Meteor.isClient) {
   });
   
   Template.playground.events({
-    'keypress #sentence-form': function (event) {
+    'keyup #sentence': function (event) {
       // Hide result if the keypress is not ENTER
       if (event.which != 13) $(".result").hide();
     },
@@ -31,6 +31,8 @@ if (Meteor.isClient) {
       Session.set('curCaption', nextCaption);
       Session.set('solution', '');
       template.find('#sentence').value = '';
+      // Reset textbox width by triggering keypress
+      $('#sentence').trigger('keypress');
       $(".result").hide();
       player.seekTo(nextCaption.start, true);
       player.playVideo();
