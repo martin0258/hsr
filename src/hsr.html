@@ -14,7 +14,7 @@
 <template name="source">
   <form id="source" class="form-inline">
     <label for="url"><a href="https://tw.voicetube.com/all/0/" target="_blank">VoiceTube</a>英聽練習</label>
-    <input type="url" id="url" name="url" placeholder="請提交一個VoiceTube影片網址以開始練習" />
+    <input type="url" id="url" name="url" placeholder="提交一個VoiceTube影片網址以開始練習" />
     <span>或</span>
     <button type="button" id="sample" class="btn btn-success">以範例開始練習</button>
     <button type="submit" id="source-submit" style="display:none"></button>
@@ -31,7 +31,7 @@
     <form id="sentence-form" class="form-inline">
       <span id="first">{{first}}</span>
       <!--Reference of dynamic textbox width: http://stackoverflow.com/a/3392617 -->
-      <input id="sentence" name="sentence" type="text" placeholder="請輸入聽到的英文（標點和大小寫沒差）"
+      <input id="sentence" name="sentence" type="text" placeholder="提交聽到的語句（標點和大小寫沒差）"
       onkeypress="this.style.width = Math.max(300, ((this.value.length + 1) * 7)) + 'px';" />
       <span id="last">{{last}}</span>
     </form>
