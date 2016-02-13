@@ -16,6 +16,9 @@ form {
 .result {
   display: none;
 }
+#check {
+  display: none;
+}
 #correct {
   color: green;
 }
