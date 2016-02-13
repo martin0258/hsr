@@ -5,8 +5,20 @@ if (Meteor.isClient) {
   });
   
   Template.playground.events({
+    'keypress #sentence-form': function (event) {
+      // Hide result if the keypress is not ENTER
+      if (event.which != 13) $(".result").hide();
+    },
     'submit #sentence-form': function (event, template) {
       event.preventDefault();
+      if ($("#correct").is(":visible")) {
+        template.find('#next').click();
+        return;
+      }
+      else if ($("#incorrect").is(":visible")) {
+        template.find('#repeat').click();
+        return;
+      }
       template.find('#check').click();
     },
     'click #next': function (event, template) {
@@ -19,6 +31,7 @@ if (Meteor.isClient) {
       Session.set('curCaption', nextCaption);
       Session.set('solution', '');
       template.find('#sentence').value = '';
+      $(".result").hide();
       player.seekTo(nextCaption.start, true);
       player.playVideo();
     },
@@ -43,11 +56,11 @@ if (Meteor.isClient) {
       inputSentence = actualWords.join(' ');
       expectedSentence = expectedWords.join(' ');
       // Not sure why == would always result in false
+      // So we use lcaleCompare instead
       isCorrect = inputSentence.localeCompare(expectedSentence)==0;
-      // Reference of fadeout with delay: http://stackoverflow.com/a/14304583
-      $("#correct,#incorrect").hide();
-      if (isCorrect) $("#correct").fadeIn('fast', function(){ $(this).delay(3000).fadeOut('fast'); });
-      else $("#incorrect").fadeIn('fast', function(){ $(this).delay(3000).fadeOut('fast'); });
+      $(".result").hide();
+      if (isCorrect) $("#correct").show();
+      else $("#incorrect").show();
     },
     'click #showSolution': function () {
       var caption = Session.get('curCaption');
