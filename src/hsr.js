@@ -212,6 +212,9 @@ if (Meteor.isClient) {
           alert('無法載入影片，請檢查影片網址是否正確。');
         }
         else {
+          $('#sentence').val('');
+          $(".result").hide();
+          Session.set('wordComparisonResult', undefined);
           Session.set('hasValidUrl', true);
           Session.set('captionIdx', 0);
           Session.set('youtubeId', result.youtubeId);
