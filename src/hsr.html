@@ -23,8 +23,10 @@
 
 <template name="playground">
   {{#if hasValidUrl}}
-  <div>
+  <div class="form-inline">
+    <button type="button" id="prevCaption" class="btn btn-default btn-small" title="上一句（按住快退）">&lt;</button>
     <code>{{captionIdx}}之{{numCaptions}}句</code>
+    <button type="button" id="nextCaption" class="btn btn-default btn-small" title="下一句（按住快轉）">&gt;</button>
   </div>
 
   <div>
@@ -41,16 +43,16 @@
     </form>
   </div>
   
+  <!-- Hidden action buttions -->
   <div class="form-inline">
     <button type="button" class="btn btn-primary" id="check">核對✓</button>
-    <button type="button" class="btn btn-primary" id="next">下句 </button>
     <button type="button" class="btn btn-default" id="repeat">重聽↻</button>
   </div>
   
   <div id="result-container">
     <!--Unicode Emoticons: http://wrttn.me/30dbfd/-->
-    <span id="correct" class="result">答對了 \(• ◡ •)/ 按ENTER至下句</span>
-    <span id="incorrect" class="result">答錯了 (&gt; _ &lt;) 按ENTER重聽</span>
+    <span id="correct" class="result">答對了 \(• ◡ •)/ 按Enter至下句</span>
+    <span id="incorrect" class="result">答錯了 (&gt; _ &lt;) 按Enter重聽</span>
   </div>
   {{/if}}
 </template>
