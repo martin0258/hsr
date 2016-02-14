@@ -83,8 +83,9 @@ if (Meteor.isClient) {
   });
   
   Template.playground.helpers({
-    hasEnteredUrl: function () {
-      return Session.get('url')!=undefined;
+    hasValidUrl: function () {
+      var hasValidUrl = Session.get('hasValidUrl');
+      return hasValidUrl!=undefined && hasValidUrl ? true : false;
     },
     first: function () {
       var caption = Session.get('curCaption');
@@ -177,9 +178,6 @@ if (Meteor.isClient) {
       // Get value from form element
       var url = event.target.url.value;
 
-      // Store url in session
-      Session.set('url', url);
-      
       // Get VoiceTube data from url
       Meteor.call('getVoiceTubeData', url, function (error, result){
         if (error) {
@@ -187,6 +185,7 @@ if (Meteor.isClient) {
           alert('無法載入影片，請檢查影片網址是否正確。');
         }
         else {
+          Session.set('hasValidUrl', true);
           Session.set('captionIdx', 0);
           Session.set('youtubeId', result.youtubeId);
           Session.set('captions', result.captions);
