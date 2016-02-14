@@ -4,6 +4,36 @@ if (Meteor.isClient) {
     Session.keys = {};
   });
   
+  // For long press next and prev caption
+  var intervalId;
+
+  var navigateCaption = function (operation) {
+    var offset = 0;
+    if (operation == 'next') offset = 1;
+    else if (operation == 'prev') offset = -1;
+    else offset = 0;
+
+    var captions = Session.get('captions');
+    var captionIdx = Session.get('captionIdx');
+    var newCaptionIdx = captionIdx + offset;
+    if (newCaptionIdx < 0 || newCaptionIdx >= captions.length) return;
+    var newCaption = captions[newCaptionIdx];
+    Session.set('captionIdx', newCaptionIdx);
+    Session.set('curCaption', newCaption);
+
+    // Reset input and result
+    $('#sentence').val('');
+    $(".result").hide();
+    Session.set('wordComparisonResult', undefined);
+
+    window.clearTimeout(timeoutId);
+    player.pauseVideo();
+    player.seekTo(newCaption.start, true);
+    player.playVideo();
+  };
+  var nextCaption = function () { navigateCaption('next'); };
+  var prevCaption = function () { navigateCaption('prev'); };
+
   Template.playground.events({
     'keyup #sentence': function (event) {
       // Hide result if the keypress is not ENTER
@@ -12,7 +42,7 @@ if (Meteor.isClient) {
     'submit #sentence-form': function (event, template) {
       event.preventDefault();
       if ($("#correct").is(":visible")) {
-        template.find('#next').click();
+        nextCaption();
         return;
       }
       else if ($("#incorrect").is(":visible")) {
@@ -21,22 +51,19 @@ if (Meteor.isClient) {
       }
       template.find('#check').click();
     },
-    'click #next': function (event, template) {
-      var captions = Session.get('captions');
-      var captionIdx = Session.get('captionIdx');
-      var nextCaption = captions[captionIdx+1];
-      Session.set('captionIdx', captionIdx+1);
-      Session.set('curCaption', nextCaption);
-
-      // Reset input and result
-      $('#sentence').val('');
-      $(".result").hide();
-      Session.set('wordComparisonResult', undefined);
-
-      window.clearTimeout(timeoutId);
-      player.pauseVideo();
-      player.seekTo(nextCaption.start, true);
-      player.playVideo();
+    'click #nextCaption': nextCaption,
+    'click #prevCaption': prevCaption,
+    'mousedown #nextCaption': function () {
+      // Start fast forward
+      intervalId = setInterval(nextCaption, 100);
+    },
+    'mousedown #prevCaption': function () {
+      // Start fast backward
+      intervalId = setInterval(prevCaption, 100);
+    },
+    'mouseup #nextCaption, mouseup #prevCaption, mouseout #nextCaption, mouseout #prevCaption': function () {
+      // Stop fast forward or backward
+      clearInterval(intervalId);
     },
     'click #check': function (event, template) {
       var isCorrect = true;
@@ -83,8 +110,9 @@ if (Meteor.isClient) {
   });
   
   Template.playground.helpers({
-    hasEnteredUrl: function () {
-      return Session.get('url')!=undefined;
+    hasValidUrl: function () {
+      var hasValidUrl = Session.get('hasValidUrl');
+      return hasValidUrl!=undefined && hasValidUrl ? true : false;
     },
     first: function () {
       var caption = Session.get('curCaption');
@@ -177,9 +205,6 @@ if (Meteor.isClient) {
       // Get value from form element
       var url = event.target.url.value;
 
-      // Store url in session
-      Session.set('url', url);
-      
       // Get VoiceTube data from url
       Meteor.call('getVoiceTubeData', url, function (error, result){
         if (error) {
@@ -187,6 +212,7 @@ if (Meteor.isClient) {
           alert('無法載入影片，請檢查影片網址是否正確。');
         }
         else {
+          Session.set('hasValidUrl', true);
           Session.set('captionIdx', 0);
           Session.set('youtubeId', result.youtubeId);
           Session.set('captions', result.captions);
