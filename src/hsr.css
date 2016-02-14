@@ -3,11 +3,12 @@
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+  margin-top: 20px;
 }
 form {
   margin: 0 0 0 0;
 }
-#url, #sentence {
+#url {
   width: 250px;
 }
 #source, #sentence-block {
@@ -19,12 +20,12 @@ form {
 #check, #next, #repeat {
   display: none;
 }
-#correct {
+#correct, .correct {
   color: green;
 }
 #incorrect {
   color: red;
 }
-#solution {
+#solution, .incorrect {
   color: white;
 }

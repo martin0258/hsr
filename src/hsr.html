@@ -24,19 +24,20 @@
 <template name="playground">
   {{#if hasEnteredUrl}}
   <div>
+    <code>{{captionIdx}}之{{numCaptions}}句</code>
+  </div>
+
+  <div>
     <span id="first">{{first}}</span>
-    <span id="solution"><abbr title="反白看答案（來源VoiceTube）">{{solution}}</abbr></span>
+    <span id="solution"><abbr title="反白看答案（來源VoiceTube）">{{{solution}}}</abbr></span>
     <span id="last">{{last}}</span>
   </div>
   
   <div id="sentence-block">
     <form id="sentence-form" class="form-inline">
       <span id="first">{{first}}</span>
-      <!--Reference of dynamic textbox width: http://stackoverflow.com/a/3392617 -->
-      <input id="sentence" name="sentence" type="text" placeholder="提交聽到的語句（標點和大小寫沒差）"
-      onkeypress="this.style.width = Math.max(250, ((this.value.length + 1) * 7)) + 'px';" />
+      <input id="sentence" name="sentence" type="text" placeholder="聽到什麼？" />
       <span id="last">{{last}}</span>
-      <code>#{{captionIdx}}/{{numCaptions}}句</code>
     </form>
   </div>
   

@@ -22,18 +22,19 @@ if (Meteor.isClient) {
       template.find('#check').click();
     },
     'click #next': function (event, template) {
-      window.clearTimeout(timeoutId);
-      player.pauseVideo();
       var captions = Session.get('captions');
       var captionIdx = Session.get('captionIdx');
       var nextCaption = captions[captionIdx+1];
       Session.set('captionIdx', captionIdx+1);
       Session.set('curCaption', nextCaption);
-      Session.set('solution', '');
-      template.find('#sentence').value = '';
-      // Reset textbox width by triggering keypress
-      $('#sentence').trigger('keypress');
+
+      // Reset input and result
+      $('#sentence').val('');
       $(".result").hide();
+      Session.set('wordComparisonResult', undefined);
+
+      window.clearTimeout(timeoutId);
+      player.pauseVideo();
       player.seekTo(nextCaption.start, true);
       player.playVideo();
     },
@@ -55,6 +56,14 @@ if (Meteor.isClient) {
       expectedWords.splice(0, 1);
       expectedWords.splice(expectedWords.length - 1, 1);
       
+      // Compare each word and store result
+      var wordComparisonResult = [];
+      for (var i = 0; i < expectedWords.length; i++) {
+        var result = i < actualWords.length && expectedWords[i]==actualWords[i];
+        wordComparisonResult.push(result);
+      }
+      Session.set('wordComparisonResult', wordComparisonResult);
+
       inputSentence = actualWords.join(' ');
       expectedSentence = expectedWords.join(' ');
       // Not sure why == would always result in false
@@ -66,6 +75,8 @@ if (Meteor.isClient) {
     },
     'click #repeat': function () {
       var caption = Session.get('curCaption');
+      window.clearTimeout(timeoutId);
+      player.pauseVideo();
       player.seekTo(caption.start, true);
       player.playVideo();
     }
@@ -84,13 +95,30 @@ if (Meteor.isClient) {
       return caption!=undefined ? caption.text.split(' ').pop() : '';
     },
     solution: function () {
+      // Set input textbox width as solution's width
+      setTimeout(function(){
+        var solutionWidth = $('#solution').width();
+        if (solutionWidth != 0) $('#sentence').width(solutionWidth);
+      }, 100);
+
       var solution = '';
       var caption = Session.get('curCaption');
       if (caption != undefined) {
-        // Remove first and last words since they are given
         var captionWords = caption.text.split(' ');
+        // Remove first and last words since they are given
         captionWords.splice(0, 1);
         captionWords.splice(captionWords.length - 1, 1);
+
+        // Show words in solution that are correct
+        // Hide words in solution that are incorrect
+        var wordComparisonResult = Session.get('wordComparisonResult');
+          if (wordComparisonResult != undefined) {
+          for (var i = 0; i < captionWords.length; i++) {
+            var wordClass = wordComparisonResult[i] ? 'correct' : 'incorrect';
+            captionWords[i] = '<span class="' + wordClass + '">' + captionWords[i] + '</span>';
+          }
+        }
+
         solution = captionWords.join(' ');
       }
       return solution;
