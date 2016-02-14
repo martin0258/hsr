@@ -31,6 +31,7 @@ if (Meteor.isClient) {
       // Reset input and result
       $('#sentence').val('');
       $(".result").hide();
+      Session.set('wordComparisonResult', undefined);
 
       window.clearTimeout(timeoutId);
       player.pauseVideo();
@@ -55,6 +56,14 @@ if (Meteor.isClient) {
       expectedWords.splice(0, 1);
       expectedWords.splice(expectedWords.length - 1, 1);
       
+      // Compare each word and store result
+      var wordComparisonResult = [];
+      for (var i = 0; i < expectedWords.length; i++) {
+        var result = i < actualWords.length && expectedWords[i]==actualWords[i];
+        wordComparisonResult.push(result);
+      }
+      Session.set('wordComparisonResult', wordComparisonResult);
+
       inputSentence = actualWords.join(' ');
       expectedSentence = expectedWords.join(' ');
       // Not sure why == would always result in false
@@ -95,10 +104,21 @@ if (Meteor.isClient) {
       var solution = '';
       var caption = Session.get('curCaption');
       if (caption != undefined) {
-        // Remove first and last words since they are given
         var captionWords = caption.text.split(' ');
+        // Remove first and last words since they are given
         captionWords.splice(0, 1);
         captionWords.splice(captionWords.length - 1, 1);
+
+        // Show words in solution that are correct
+        // Hide words in solution that are incorrect
+        var wordComparisonResult = Session.get('wordComparisonResult');
+          if (wordComparisonResult != undefined) {
+          for (var i = 0; i < captionWords.length; i++) {
+            var wordClass = wordComparisonResult[i] ? 'correct' : 'incorrect';
+            captionWords[i] = '<span class="' + wordClass + '">' + captionWords[i] + '</span>';
+          }
+        }
+
         solution = captionWords.join(' ');
       }
       return solution;

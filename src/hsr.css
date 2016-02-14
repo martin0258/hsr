@@ -20,12 +20,12 @@ form {
 #check, #next, #repeat {
   display: none;
 }
-#correct {
+#correct, .correct {
   color: green;
 }
 #incorrect {
   color: red;
 }
-#solution {
+#solution, .incorrect {
   color: white;
 }
