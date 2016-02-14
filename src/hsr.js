@@ -66,6 +66,8 @@ if (Meteor.isClient) {
     },
     'click #repeat': function () {
       var caption = Session.get('curCaption');
+      window.clearTimeout(timeoutId);
+      player.pauseVideo();
       player.seekTo(caption.start, true);
       player.playVideo();
     }
