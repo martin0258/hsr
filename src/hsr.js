@@ -39,14 +39,17 @@ if (Meteor.isClient) {
       // Hide result if the keypress is not ENTER
       if (event.which != 13) $(".result").hide();
     },
+    'keydown #sentence': function (event) {
+      // Repeat if pressing Ctrl+Enter
+      // Reference: http://stackoverflow.com/a/9343095
+      if ((event.keyCode == 10 || event.keyCode == 13) && event.ctrlKey) {
+        $('#repeat').click();
+      }
+    },
     'submit #sentence-form': function (event, template) {
       event.preventDefault();
       if ($("#correct").is(":visible")) {
         nextCaption();
-        return;
-      }
-      else if ($("#incorrect").is(":visible")) {
-        template.find('#repeat').click();
         return;
       }
       template.find('#check').click();
