@@ -34,6 +34,8 @@ if (Meteor.isClient) {
   var nextCaption = function () { navigateCaption('next'); };
   var prevCaption = function () { navigateCaption('prev'); };
 
+  var spacesRe = /\s+/;
+
   Template.playground.events({
     'keyup #sentence': function (event) {
       // Hide result if the keypress is not ENTER
@@ -78,9 +80,9 @@ if (Meteor.isClient) {
       // Remove characters that are not English or number or white space
       inputSentence = inputSentence.replace(/[^a-z0-9 ]/g, '');
       expectedSentence = expectedSentence.replace(/[^a-z0-9 ]/g, '');
-      // Ignore white spaces
-      var actualWords = inputSentence.split(' ');
-      var expectedWords = expectedSentence.split(' ');
+      // Ignore one or more white spaces between words
+      var actualWords = inputSentence.split(spacesRe);
+      var expectedWords = expectedSentence.split(spacesRe);
       
       // Remove first and last words since they are given
       expectedWords.splice(0, 1);
@@ -96,6 +98,8 @@ if (Meteor.isClient) {
 
       inputSentence = actualWords.join(' ');
       expectedSentence = expectedWords.join(' ');
+      console.log(inputSentence);
+      console.log(expectedSentence);
       // Not sure why == would always result in false
       // So we use lcaleCompare instead
       isCorrect = inputSentence.localeCompare(expectedSentence)==0;
@@ -119,11 +123,11 @@ if (Meteor.isClient) {
     },
     first: function () {
       var caption = Session.get('curCaption');
-      return caption!=undefined ? caption.text.split(' ')[0] : ''; 
+      return caption!=undefined ? caption.text.split(spacesRe)[0] : '';
     },
     last: function () {
       var caption = Session.get('curCaption');
-      return caption!=undefined ? caption.text.split(' ').pop() : '';
+      return caption!=undefined ? caption.text.split(spacesRe).pop() : '';
     },
     solution: function () {
       // Set input textbox width as solution's width
@@ -135,7 +139,7 @@ if (Meteor.isClient) {
       var solution = '';
       var caption = Session.get('curCaption');
       if (caption != undefined) {
-        var captionWords = caption.text.split(' ');
+        var captionWords = caption.text.split(spacesRe);
         // Remove first and last words since they are given
         captionWords.splice(0, 1);
         captionWords.splice(captionWords.length - 1, 1);
