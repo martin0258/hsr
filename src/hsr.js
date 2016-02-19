@@ -87,6 +87,16 @@ if (Meteor.isClient) {
 
     return wordComparisonResult.slice(1).reverse();
   };
+  // Use case: Insert a space if the preceding char is not a space
+  var getCharacterPrecedingCaret = function (ele) {
+    var precedingChar = "", caretPos = ele.selectionStart;
+    if (window.getSelection && caretPos > 0) {
+      ele.selectionStart -= 1;
+      precedingChar = window.getSelection().toString();
+      ele.selectionStart = caretPos;
+    }
+    return precedingChar;
+  };
 
   var spacesRe = /\s+/;
 
@@ -116,6 +126,9 @@ if (Meteor.isClient) {
           var caretPos = textbox.selectionStart;
           var textboxVal = textbox.value;
           var wordToAdd = firstUnmatchedWord + ' ';
+          var precedingChar = getCharacterPrecedingCaret((textbox));
+          if (precedingChar != "" && precedingChar != ' ')
+            wordToAdd = ' ' + wordToAdd;
           // Add word where cursor is
           // Reference: http://stackoverflow.com/a/15977052
           textbox.value = textboxVal.substring(0, caretPos) + wordToAdd + textboxVal.substring(caretPos);
