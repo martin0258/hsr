@@ -33,6 +33,58 @@ if (Meteor.isClient) {
   };
   var nextCaption = function () { navigateCaption('next'); };
   var prevCaption = function () { navigateCaption('prev'); };
+  var findWordsInLCS = function (s1, s2) {
+    // Find a longest common subsequence between two string arrays
+    // And return an array whose length is equal to length of first array
+    // Indicate the index of array element that compose lcs
+    // Reference: http://www.csie.ntnu.edu.tw/~u91029/LongestCommonSubsequence.html
+
+    // Initialize DP table to calculate length of lcs
+    // And array to store source of lcs answer
+    var words1 = s1.slice();
+    var words2 = s2.slice();
+    words1.unshift('');
+    words2.unshift('');
+    var lcsDP = new Array(words1.length);
+    var prev = new Array(words1.length);
+    for (var i = 0; i < words1.length; i++) {
+      lcsDP[i] = new Array(words2.length);
+      prev[i] = new Array(words2.length);
+    }
+
+    // Calculate lcs length with DP
+    for (var i = 0; i < words1.length; i++) lcsDP[i][0] = 0;
+    for (var j = 0; j < words2.length; j++) lcsDP[0][j] = 0;
+    for (var i = 1; i < words1.length; i++)
+      for (var j = 1; j < words2.length; j++) {
+        if (words1[i] == words2[j]) {
+          lcsDP[i][j] = lcsDP[i-1][j-1] + 1;
+          prev[i][j] = 'left-top';
+        } else {
+          if (lcsDP[i-1][j] < lcsDP[i][j-1]) {
+            lcsDP[i][j] = lcsDP[i][j-1];
+            prev[i][j] = 'left';
+          } else {
+            lcsDP[i][j] = lcsDP[i-1][j];
+            prev[i][j] = 'top';
+          }
+        }
+      }
+    // Find elements that compose lcs
+    var wordComparisonResult = new Array(words1.length);
+    for (var i = 0 ; i < wordComparisonResult.length; i++) wordComparisonResult[i] = false;
+    var findWordInLCS = function (i, j) {
+      if (i==0 || j==0) return;
+      if (prev[i][j] == 'left-top') {
+        findWordInLCS(i-1, j-1);
+        wordComparisonResult[i] = true;
+      } else if (prev[i][j] == 'top') findWordInLCS(i-1, j);
+      else if (prev[i][j] == 'left') findWordInLCS(i, j-1);
+    };
+    findWordInLCS(words1.length-1, words2.length-1);
+
+    return wordComparisonResult.slice(1);
+  };
 
   var spacesRe = /\s+/;
 
@@ -89,11 +141,7 @@ if (Meteor.isClient) {
       expectedWords.splice(expectedWords.length - 1, 1);
       
       // Compare each word and store result
-      var wordComparisonResult = [];
-      for (var i = 0; i < expectedWords.length; i++) {
-        var result = i < actualWords.length && expectedWords[i]==actualWords[i];
-        wordComparisonResult.push(result);
-      }
+      var wordComparisonResult = findWordsInLCS(expectedWords, actualWords);
       Session.set('wordComparisonResult', wordComparisonResult);
 
       inputSentence = actualWords.join(' ');
