@@ -23,7 +23,8 @@ if (Meteor.isClient) {
 
     // Reset input and result
     $('#sentence').val('');
-    $(".result").hide();
+    $("#correct").hide();
+    $("incorrect").show();
     Session.set('wordComparisonResult', undefined);
 
     window.clearTimeout(timeoutId);
@@ -41,8 +42,9 @@ if (Meteor.isClient) {
 
     // Initialize DP table to calculate length of lcs
     // And array to store source of lcs answer
-    var words1 = s1.slice();
-    var words2 = s2.slice();
+    // Reverse to find the matched word closest to start of sentence
+    var words1 = s1.slice().reverse();
+    var words2 = s2.slice().reverse();
     words1.unshift('');
     words2.unshift('');
     var lcsDP = new Array(words1.length);
@@ -83,21 +85,46 @@ if (Meteor.isClient) {
     };
     findWordInLCS(words1.length-1, words2.length-1);
 
-    return wordComparisonResult.slice(1);
+    return wordComparisonResult.slice(1).reverse();
   };
 
   var spacesRe = /\s+/;
 
   Template.playground.events({
-    'keyup #sentence': function (event) {
+    'keyup #sentence': function (event, template) {
       // Hide result if the keypress is not ENTER
-      if (event.which != 13) $(".result").hide();
+      //if (event.which != 13) $(".result").hide();
+      template.find('#check').click();
     },
-    'keydown #sentence': function (event) {
+    'keydown #sentence': function (event, template) {
       // Repeat if pressing Ctrl+Enter
       // Reference: http://stackoverflow.com/a/9343095
       if ((event.keyCode == 10 || event.keyCode == 13) && event.ctrlKey) {
         $('#repeat').click();
+      } else if (event.keyCode == 9) {
+        // When I press Tab key
+        // Then insert the first word in answer that is not in LCS
+        template.find('#check').click();
+        var wordComparisonResult = Session.get('wordComparisonResult');
+        var caption = Session.get('curCaption');
+        var captionWords = caption.text.split(spacesRe);
+        captionWords = captionWords.slice(1, captionWords.length-1);
+        var firstUnmatchedWordIdx = wordComparisonResult.indexOf(false);
+        if (firstUnmatchedWordIdx != -1) {
+          var firstUnmatchedWord = captionWords[firstUnmatchedWordIdx];
+          var textbox = event.currentTarget;
+          var caretPos = textbox.selectionStart;
+          var textboxVal = textbox.value;
+          var wordToAdd = firstUnmatchedWord + ' ';
+          // Add word where cursor is
+          // Reference: http://stackoverflow.com/a/15977052
+          textbox.value = textboxVal.substring(0, caretPos) + wordToAdd + textboxVal.substring(caretPos);
+          // Place cursor at the end of word to add
+          textbox.selectionStart = caretPos + wordToAdd.length;
+          textbox.selectionEnd = caretPos + wordToAdd.length;
+        }
+        event.preventDefault();
+        return false;
       }
     },
     'submit #sentence-form': function (event, template) {
@@ -151,9 +178,14 @@ if (Meteor.isClient) {
       // Not sure why == would always result in false
       // So we use lcaleCompare instead
       isCorrect = inputSentence.localeCompare(expectedSentence)==0;
-      $(".result").hide();
-      if (isCorrect) $("#correct").show();
-      else $("#incorrect").show();
+      if (isCorrect) {
+        $("#incorrect").hide();
+        $("#correct").show();
+      }
+      else {
+        $("#correct").hide();
+        $("#incorrect").show();
+      }
     },
     'click #repeat': function () {
       var caption = Session.get('curCaption');
@@ -268,7 +300,7 @@ if (Meteor.isClient) {
         }
         else {
           $('#sentence').val('');
-          $(".result").hide();
+          $("#correct").hide();
           Session.set('wordComparisonResult', undefined);
           Session.set('hasValidUrl', true);
           Session.set('captionIdx', 0);

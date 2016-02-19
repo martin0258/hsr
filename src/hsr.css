@@ -14,7 +14,7 @@ form {
 #source, #sentence-block {
   margin: 5px 0 5px 0;
 }
-.result {
+#correct {
   display: none;
 }
 #check, #next, #repeat {
@@ -24,7 +24,7 @@ form {
   color: green;
 }
 #incorrect {
-  color: red;
+  opacity: 0.7;
 }
 #solution, .incorrect {
   color: white;
